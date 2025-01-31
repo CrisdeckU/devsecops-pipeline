@@ -30,7 +30,7 @@ describe("Pruebas de la API", () => {
   });
 });
 
-// 🔴❌ No se cierra correctamente Jest
+// No se cierra correctamente Jest
 afterAll(() => {
-  process.exit(); // 🔥 Cierra Jest de forma abrupta (no recomendado)
+  process.exit(); //Cierra Jest de forma abrupta (Mala Practica)
 });

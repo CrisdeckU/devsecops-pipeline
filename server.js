@@ -5,24 +5,24 @@ const _ = require("lodash"); // Usar una versión insegura de lodash a propósit
 
 const port = process.env.PORT || 3000;
 
-// 🔴❌ Hardcoded API Key (esto es una mala práctica)
+// Hardcoded API Key (Mala práctica)
 const API_KEY = "123456789abcdef";
 
 // Middleware para parsear JSON
 app.use(bodyParser.json());
 
-// ✅ Ruta normal
+// Ruta normal
 app.get("/", (req, res) => {
   res.send("¡Hola, mundo!");
 });
 
-// 🔴❌ Ruta con inyección SQL (simulada, pero representa un mal diseño)
+// Ruta con inyección SQL
 app.get("/user", (req, res) => {
   const userId = req.query.id;
   res.send(`Usuario solicitado: ${userId}`); // No se valida el input, vulnerable a ataques
 });
 
-// 🔴❌ Uso de `eval`, una mala práctica de seguridad
+//Uso de `eval`, una mala práctica de seguridad
 app.post("/execute", (req, res) => {
   try {
     const code = req.body.code;
@@ -33,13 +33,13 @@ app.post("/execute", (req, res) => {
   }
 });
 
-// 🔴❌ Dependencia de lodash utilizada con una vulnerabilidad conocida
+//Dependencia de lodash utilizada con una vulnerabilidad conocida
 app.get("/lodash", (req, res) => {
   const numbers = [1, 2, 3, 4, 5];
   res.json(_.shuffle(numbers)); // Solo para simular el uso de una dependencia vulnerable
 });
 
-// ❌🔴 Mal manejo de errores (debería usarse un middleware específico)
+//Mal manejo de errores (Sin middleware específico)
 app.use((err, req, res, next) => {
   res.status(500).send("Algo salió mal");
 });
