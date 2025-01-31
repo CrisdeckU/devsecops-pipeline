@@ -32,32 +32,28 @@ jobs:
       - name: Checkout del código
         uses: actions/checkout@v3
 
-      - name: Instalar Trivy (Escaneo de Vulnerabilidades)
-        run: |
-          sudo apt-get install wget -y
-          wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.45.0_Linux-64bit.tar.gz
-          tar -xvf trivy_0.45.0_Linux-64bit.tar.gz
-          sudo mv trivy /usr/local/bin/
-
       - name: Escaneo de dependencias con Trivy
-        run: trivy fs --exit-code 1 --severity HIGH,CRITICAL .
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: "fs"
+          ignore-unfixed: true
+          format: "table"
+          exit-code: "1"
+          severity: "HIGH,CRITICAL"
+
+      - name: Build de la imagen Docker para escaneo
+        run: docker build -t mi-app-devsecops .
 
       - name: Escaneo de imagen Docker con Trivy
-        run: |
-          docker build -t mi-app-devsecops .
-          trivy image --exit-code 1 --severity HIGH,CRITICAL mi-app-devsecops
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: "image"
+          image-ref: "mi-app-devsecops"
+          ignore-unfixed: true
+          format: "table"
+          exit-code: "1"
+          severity: "HIGH,CRITICAL"
 
-  docker-build:
-    needs: security-scan
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout del código
-        uses: actions/checkout@v3
-
-      - name: Build de la imagen Docker
-        run: |
-          docker build -t mi-app-devsecops .
   sonar-analysis:
     runs-on: ubuntu-latest
     needs: security-scan
@@ -65,13 +61,6 @@ jobs:
     steps:
       - name: Checkout del código
         uses: actions/checkout@v3
-
-      - name: Instalar SonarQube Scanner
-        run: |
-          wget -O sonar-scanner-cli.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip
-          unzip sonar-scanner-cli.zip
-          sudo mv sonar-scanner-4.8.0.2856-linux /opt/sonar-scanner
-          sudo ln -s /opt/sonar-scanner/bin/sonar-scanner /usr/local/bin/sonar-scanner
 
       - name: Analizar código con SonarCloud
         run: |
@@ -81,3 +70,14 @@ jobs:
             -Dsonar.sources=. \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+
+  docker-build:
+    needs: sonar-analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v3
+
+      - name: Build final de la imagen Docker
+        run: docker build -t mi-app-devsecops .
