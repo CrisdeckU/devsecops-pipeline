@@ -32,13 +32,12 @@ jobs:
       - name: Checkout del código
         uses: actions/checkout@v3
 
-    - name: Instalar Trivy (Escaneo de Vulnerabilidades)
-      run: |
-        sudo apt-get update && sudo apt-get install wget -y
-        wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
-        echo "deb https://aquasecurity.github.io/trivy-repo/deb stable main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
-        sudo apt-get update && sudo apt-get install trivy -y
-
+      - name: Instalar Trivy (Escaneo de Vulnerabilidades)
+        run: |
+    sudo apt-get update && sudo apt-get install wget -y
+    wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+    echo "deb https://aquasecurity.github.io/trivy-repo/deb stable main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+    sudo apt-get update && sudo apt-get install trivy -y
 
       - name: Escaneo de dependencias con Trivy
         run: trivy fs --exit-code 1 --severity HIGH,CRITICAL .
