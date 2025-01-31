@@ -32,16 +32,21 @@ jobs:
       - name: Checkout del código
         uses: actions/checkout@v3
 
-      - name: Instalar Trivy (Escaneo de Vulnerabilidades)
+      - name: Instalar Trivy
         run: |
           sudo apt update
-          sudo snap install trivy
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh
 
       - name: Escaneo de dependencias con Trivy
         run: trivy fs --exit-code 1 --severity HIGH,CRITICAL .
 
       - name: Configurar permisos para Docker
-        run: sudo chmod 666 /var/run/docker.sock
+        run: |
+          sudo usermod -aG docker $USER
+          newgrp docker
+
+      - name: Autenticarse en Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
       - name: Escaneo de imagen Docker con Trivy
         run: |
@@ -56,9 +61,14 @@ jobs:
       - name: Checkout del código
         uses: actions/checkout@v3
 
+      - name: Autenticarse en Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
       - name: Build de la imagen Docker
         run: |
           docker build -t mi-app-devsecops .
+          docker push mi-app-devsecops
+
   sonar-analysis:
     runs-on: ubuntu-latest
     needs: security-scan
