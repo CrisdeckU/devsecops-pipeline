@@ -50,6 +50,12 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Exportar Java 17 como variable de entorno
+        run: echo "JAVA_HOME=/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.*/x64" >> $GITHUB_ENV
+
+      - name: Verificar versión de Java después de la instalación
+        run: java -version
+
       - name: Instalar SonarQube Scanner
         run: |
           wget -O sonar-scanner-cli.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip
@@ -59,6 +65,7 @@ jobs:
 
       - name: Analizar código con SonarQube
         run: |
+          export JAVA_HOME=$(which java)
           sonar-scanner \
             -Dsonar.projectKey=devsecops-pipeline \
             -Dsonar.organization=crisdecku \
