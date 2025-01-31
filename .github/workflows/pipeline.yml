@@ -64,11 +64,11 @@ jobs:
         with:
           scan-type: 'fs'
           ignore-unfixed: true
-          format: 'table'
+          format: 'json'
+          output: 'trivy-report.json'
           exit-code: '1'
           severity: 'CRITICAL,HIGH'
-          format: 'json'
-          output: 'trivy-report.json' 
+           
 
       - name: Upload Trivy Report
         uses: actions/upload-artifact@v3
