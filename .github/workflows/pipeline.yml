@@ -64,9 +64,11 @@ jobs:
         with:
           scan-type: 'fs'
           ignore-unfixed: true
-          format: 'json'
-          output: 'trivy-report.json'
-          exit-code: '0' # No detiene el pipeline aunque haya vulnerabilidades
+          format: 'table'
+          exit-code: '1'
+          severity: 'CRITICAL,HIGH'
+          format: json
+          output: 'trivy-report.json' 
 
       - name: Upload Trivy Report
         uses: actions/upload-artifact@v3
