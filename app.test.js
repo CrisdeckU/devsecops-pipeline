@@ -8,3 +8,7 @@ describe("GET /", () => {
     expect(response.text).toBe("¡Hola, mundo!");
   });
 });
+
+afterAll(() => {
+  process.exit(); // Cierra Jest después de la ejecución
+});
