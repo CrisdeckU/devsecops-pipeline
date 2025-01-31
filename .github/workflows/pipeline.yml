@@ -67,7 +67,7 @@ jobs:
           format: 'table'
           exit-code: '1'
           severity: 'CRITICAL,HIGH'
-          format: json
+          format: 'json'
           output: 'trivy-report.json' 
 
       - name: Upload Trivy Report
