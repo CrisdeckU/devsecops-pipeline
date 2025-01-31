@@ -42,6 +42,11 @@ jobs:
 
       - name: Configurar permisos para Docker
         run: |
+          sudo chmod 666 /var/run/docker.sock
+
+
+      - name: Configurar permisos para Docker
+        run: |
           sudo usermod -aG docker $USER
           newgrp docker
 
