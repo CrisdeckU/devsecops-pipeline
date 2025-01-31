@@ -1,5 +1,5 @@
 const request = require("supertest");
-const app = require("./server");
+const app = require("../server");
 
 describe("GET /", () => {
   it("Debe responder con '¡Hola, mundo!'", async () => {
